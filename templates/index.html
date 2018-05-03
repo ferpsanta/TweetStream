@@ -23,7 +23,9 @@
 </head>
 <body>
 <div id="map"></div>
-
+<div id="api_url_container">
+    URI: <a id="api_link" style="text-align:center" href="#"></a>
+</div>
 <script>
 
     var center = {
@@ -40,6 +42,34 @@
 
     var map;
     var current_pos_rectangle;
+    var timer;
+
+
+    function setURI() {
+        var api_url = document.getElementById('api_link');
+        var api_link = "/streamTweets?north="+bounds['north']+"&south="+bounds['south']+"&west="+bounds['west']+"&east="+bounds['east'];
+        api_url.setAttribute('href', api_link);
+        api_url.innerText = api_link;
+    }
+
+    function rectBoundChanged(event) {
+
+        clearTimeout(timer);
+        timer  =  setTimeout(function(){
+            var rect_pos = current_pos_rectangle.getBounds();
+            var ne = rect_pos.getNorthEast();
+            var sw = rect_pos.getSouthWest();
+            bounds = { north: ne.lat(),
+                south: sw.lat(),
+                east: ne.lng(),
+                west: sw.lng()
+            };
+
+            setURI();
+            document.getElementById('tweet-container').innerHTML = "Loading tweets...";
+        }, 1000);
+
+    }
 
     function initMap() {
 
@@ -57,6 +87,8 @@
             strokeColor: '#1c22ff',
             strokeOpacity: 0.2,
             strokeWeight: 2});
+
+        google.maps.event.addListener(current_pos_rectangle, 'bounds_changed', rectBoundChanged);
 
     }
 
