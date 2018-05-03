@@ -1,0 +1,4 @@
+flask>=0.12.2
+jinja2>=2.10
+gevent>=1.2.2
+gevent-websocket>=0.10.1
