@@ -1,37 +1,25 @@
-## Welcome to GitHub Pages
+## Geo Tweet real-time stream
 
-You can use the [editor on GitHub](https://github.com/ferpsanta/TweetStream/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+The following project provides an API that given the coordinates in latitude and longitude of the two corners of a box, will return a JSON stream with all the tweets being tweeted in the delimited area.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+There is two main resources in this projects:
+* ```/``` : This returns the main view.
+* ```/streamTweets``` : raw JSON tweet API.
 
-### Markdown
+### JSON API
+This API returns a ```application/stream+json``` that will make all the tweets inside the bounding box passed as argument.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+The bounding box is passed as argument by providing the coordinates (lat, lon) of the upper left and bottom right corners.
 
-```markdown
-Syntax highlighted code block
+- A = (52.6035, -2.0600)
+- B = (50.5978, 1.8472)
+ 
+ The call to the API will be:
+ 
+ ```/streamTweets?north=52.6035&amp;south=50.5978&amp;west=-2.0600&amp;east=1.8472```
+ 
+And this call will return JSON objects at the users tweet in the delimited area:
 
-# Header 1
-## Header 2
-### Header 3
+### Main view
 
-- Bulleted
-- List
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ferpsanta/TweetStream/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.

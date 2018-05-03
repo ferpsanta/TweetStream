@@ -167,7 +167,7 @@ def stream_tweets():
             except Exception as e:
                 print(e)
 
-    return Response(generate(), content_type='application/json')
+    return Response(generate(), content_type='application/stream+json')
 
 
 if __name__ == "__main__":
