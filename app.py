@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, logging
 from flask_socketio import SocketIO
 
 app = Flask(__name__, template_folder="templates")
@@ -37,6 +37,21 @@ def mapview():
                            async_mode=socketio.async_mode)
 
 
+@socketio.on('get_tweets', namespace='/webTweetStream')
+def connect(bounds):
+    app.logger.debug("/get_tweets socket")
+
+
+@app.route("/streamTweets", methods=['GET'])
+def stream_tweets():
+    app.logger.debug("/streamTweets")
+
+
 if __name__ == "__main__":
     app.debug = True
+    app.debug_log_format = """-------------------------------------------------------------------------
+                                %(worker_id)s (levelname)s in %(module)s [%(pathname)s:%(lineno)d]:\n%(message)s
+                              -------------------------------------------------------------------------"""
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.info("App start")
     socketio.run(app)
