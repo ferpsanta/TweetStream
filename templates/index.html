@@ -54,12 +54,11 @@
         setURI();
     });
 
-    // Method to handle incomming tweets
+    // Method to handle incoming tweets
     socket.on('tweet', function(msg) {
         var msg_obj = JSON.parse(msg.data);
         printTweet(msg_obj);
-        console.log(msg_obj);
-
+        positionTweet(msg_obj);
     });
 
     // Prints the received tweet in a new line with the user and the location.
@@ -67,6 +66,27 @@
         document.getElementById('tweet-container').innerHTML = tweet.user.screen_name +' in '+
                                                                tweet.place.full_name +': \'' +
                                                                tweet.text +'\'';
+    }
+
+    // This method marks in the map during 20 seconds the position where there was a tweet.
+    // For this feature the tweet must have geo location.
+    function positionTweet(tweet) {
+        if (tweet.geo !== null) {
+            console.log(tweet);
+            var lat = tweet.geo.coordinates[0];
+            var lon = tweet.geo.coordinates[1];
+            var tweet_text = tweet.text;
+            var marker = new google.maps.Marker({
+                position: {lat: lat, lng: lon},
+                map: map,
+                title: tweet_text
+            });
+
+            // Remove the marker after 20 seconds
+            setTimeout(function(){
+                marker.setMap(null);
+            }, 20000);
+        }
     }
 
     // Provides a direct link to the tweet stream API (raw)
@@ -77,7 +97,8 @@
         api_url.innerText = api_link;
     }
 
-    // Handles the bounding rectangle changes
+    // Handles the bounding rectangle changes, the delay prevents the socket being called continuously
+    // and only the last change will be taken into account
     function rectBoundChanged(event) {
 
         clearTimeout(timer);
@@ -91,6 +112,7 @@
                 west: sw.lng()
             };
 
+            setURI();
             socket.emit('get_tweets', bounds);
             document.getElementById('tweet-container').innerHTML = "Loading tweets...";
         }, 1000);
