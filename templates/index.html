@@ -23,6 +23,7 @@
 </head>
 <body>
 <div id="map"></div>
+<div id="tweet-container"></div>
 <div id="api_url_container">
     URI: <a id="api_link" style="text-align:center" href="#"></a>
 </div>
@@ -56,8 +57,17 @@
     // Method to handle incomming tweets
     socket.on('tweet', function(msg) {
         var msg_obj = JSON.parse(msg.data);
+        printTweet(msg_obj);
         console.log(msg_obj);
+
     });
+
+    // Prints the received tweet in a new line with the user and the location.
+    function printTweet(tweet) {
+        document.getElementById('tweet-container').innerHTML = tweet.user.screen_name +' in '+
+                                                               tweet.place.full_name +': \'' +
+                                                               tweet.text +'\'';
+    }
 
     // Provides a direct link to the tweet stream API (raw)
     function setURI() {
@@ -81,6 +91,7 @@
                 west: sw.lng()
             };
 
+            socket.emit('get_tweets', bounds);
             document.getElementById('tweet-container').innerHTML = "Loading tweets...";
         }, 1000);
 
