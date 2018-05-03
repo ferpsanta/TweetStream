@@ -20,7 +20,7 @@ The bounding box is passed as argument by providing the coordinates (lat, lon) o
  
  ```/streamTweets?north=52.6035&south=50.5978&west=-2.0600&east=1.8472```
  
-And this call will return JSON objects at the users tweet in the delimited area:
+And this call will stream JSON objects as the users tweet in the delimited area:
 
 <img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/api.gif" width="750"/>
 
