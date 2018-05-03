@@ -1,5 +1,7 @@
-from flask import Flask, render_template, logging
+from flask import Flask, render_template, logging, request, Response
 from flask_socketio import SocketIO
+
+from modules.twitter_stream_consumer import TwitterStreamConsumer
 
 app = Flask(__name__, template_folder="templates")
 socketio = SocketIO(app, async_mode=None)  # Async mode will be handled automatically
@@ -44,7 +46,39 @@ def connect(bounds):
 
 @app.route("/streamTweets", methods=['GET'])
 def stream_tweets():
-    app.logger.debug("/streamTweets")
+    """
+        Returns a response stream of JSON objects containing the real-time tweets within the area
+        delimited by the coordinates given as argument in the request.
+        For alignment with the Twitter API, the endpoint call for getting the tweet stream will
+        look like:
+            /streamTweets?north=N&south=S&west=W&east=E
+
+        where N, S, W, E must be valid longitudes and latitudes delimiting the corner of the bounding
+        box that covers the tweets area.
+    :return: generator containing JSONs as stream response.
+    """
+    north = request.args.get('north', type=float)
+    south = request.args.get('south', type=float)
+    west = request.args.get('west', type=float)
+    east = request.args.get('east', type=float)
+
+    app.logger.info("API streaming tweets around in the region: [{},{},{},{}]".format(north, east,
+                                                                                      south, west))
+    consumer = TwitterStreamConsumer()
+    consumer.start_stream({"north": north,
+                           "east": east,
+                           "west": west,
+                           "south": south})
+
+    def generate():
+        while True:
+            try:
+                data = consumer.data_stream.get()
+                yield data
+            except Exception as e:
+                print(e)
+
+    return Response(generate(), content_type='application/json')
 
 
 if __name__ == "__main__":
