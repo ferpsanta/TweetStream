@@ -1,3 +1,5 @@
+import time
+
 from flask import Flask, render_template, logging, request, Response
 from flask_socketio import SocketIO
 
@@ -20,9 +22,57 @@ coordinates = {"east": 1.8472,
                "south": 50.5978,
                "north": 52.6035}
 
+# Websocket multi-threading and tweet consuming
+thread = None
+thread_running = False
+tweet_consumer = TwitterStreamConsumer()
+
+
+""" AUXILIARY FUNCTIONS """
+
+
+def get_tweets():
+    """
+        Starts a new stream in the given coordinates, this stream will be handled by its own threat
+        that will emit through the socket all the new tweets.
+        The communication between the stream and the threat is by using a synchronized queue.
+    :return: None
+    """
+    app.logger.debug("Threat started: get_tweets")
+    tweet_consumer.start_stream(coordinates)
+    while thread_running:
+        try:
+            data = tweet_consumer.data_stream.get()
+        except Exception as e:
+            app.logger.error("Error while fetching new data: {}".format(e))
+            time.sleep(1)
+        else:
+            # Wont send the tweets in buffer is the stream is stopped.
+            if thread_running:
+                socketio.emit('tweet', {'data': data}, namespace='/webTweetStream', broadcast=True)
+
+
+def compare_coordinates(new_coordinates):
+    """
+        This method compares the current app coordinates and the new received ones to determine
+        if they are the same.
+
+    :param new_coordinates: dict containing 4 coordinates that form the square with the region for
+                            showing the tweets:
+                            - north
+                            - east
+                            - south
+                            - west
+    :return: boolean if the given coordinates are the same than the current global ones.
+    """
+    for k, v in coordinates.items():
+        if new_coordinates[k] != v:
+            return False
+
+    return True
+
 
 """ API """
-
 
 @app.route("/")
 def mapview():
@@ -41,7 +91,29 @@ def mapview():
 
 @socketio.on('get_tweets', namespace='/webTweetStream')
 def connect(bounds):
-    app.logger.debug("/get_tweets socket")
+    """
+         This method handles the socket stream, all the peers connected will send and receive
+         the new tweets in the namespace "/webTweetStream", also all the changes in the coordinates
+         will be broad-casted to the peers here so their maps will receive the updates.
+    :param bounds: bounds demanded by the peers to be set in the app.
+    :return: None
+    """
+
+    # Get access to modify the app globals
+    global coordinates
+    global thread
+    global thread_running
+
+    thread_running = False  # Stop the get_tweets task
+    coordinates = bounds  # Set the new coordinates
+
+    # Wait till the get_tweets thread stops.
+    if thread:
+        thread.join(timeout=10)
+
+    # Start the new
+    thread_running = True
+    thread = socketio.start_background_task(target=get_tweets)
 
 
 @app.route("/streamTweets", methods=['GET'])
