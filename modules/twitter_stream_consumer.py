@@ -1,5 +1,6 @@
 import logging
 import queue
+import time
 
 from flask import current_app as app
 from tweepy import Stream, OAuthHandler, TweepError
@@ -62,6 +63,25 @@ class TwitterStreamConsumer(object):
             self.stream.filter(locations=self.area_coordinates(coordinates), async=True)
         except TweepError as e:
             logger.error("{}".format(e))
+
+    def stop_stream(self):
+        """
+            Stops the message stream and clears the queue.
+        :return: None
+        """
+        self.stream.disconnect()
+        logger.info("Waiting for the stream to stop...")
+
+        # Wait for the stream to stop and clear the messages in the queue
+        # due to a bug in tweepy sometimes disconnect() function is not working in asynchronous
+        # streams, that is why we access manually to the thread of the stream (even if protected).
+        # https://github.com/tweepy/tweepy/issues/569
+        while self.stream._thread.is_alive():
+            time.sleep(.1)
+        with self.data_stream.mutex:
+            self.data_stream.queue.clear()
+
+        logger.info("Stream stopped")
 
     @staticmethod
     def area_coordinates(coordinates):

@@ -51,6 +51,9 @@ def get_tweets():
             if thread_running:
                 socketio.emit('tweet', {'data': data}, namespace='/webTweetStream', broadcast=True)
 
+    app.logger.debug("Threat stopped: get_tweets")
+    tweet_consumer.stop_stream()
+
 
 def compare_coordinates(new_coordinates):
     """
