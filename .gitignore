@@ -1,0 +1,2 @@
+# Ignore the configuration changes to avoid accidental commits of secret keys.
+config.cfg
