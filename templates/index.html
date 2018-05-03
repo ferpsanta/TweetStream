@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cainthus Challenge</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #tweet-container {
+            text-align:center;
+        }
+        #map {
+            height: 85%;
+        }
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+
+    var center = {
+        lat: {{center['lat']}},
+        lng: {{center['lng']}}
+    };
+
+    var bounds = {
+        north: {{area_bounds['north']}},
+        south: {{area_bounds['south']}},
+        east: {{area_bounds['east']}},
+        west: {{area_bounds['west']}}
+    };
+
+    var map;
+    var current_pos_rectangle;
+
+    function initMap() {
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 4,
+            center: center,
+            streetViewControl: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        current_pos_rectangle = new google.maps.Rectangle({map: map,
+            bounds: bounds,
+            editable: true,
+            draggable: true,
+            strokeColor: '#1c22ff',
+            strokeOpacity: 0.2,
+            strokeWeight: 2});
+
+    }
+
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key={{google_api_key}}&callback=initMap">
+</script>
+</body>
+</html>
