@@ -27,7 +27,7 @@ And this call will return JSON objects at the users tweet in the delimited area:
 
 ### Main view
 
-<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo5.gif" width="750"/>
+<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo5.gif" width="600"/>
 
 
 The main view keeps connected to the tweet stream to update in realtime the map with the new tweets. This connection has been done using websockets [due to a limitation of javascript to process a json stream](https://stackoverflow.com/questions/6558129/process-a-continuous-stream-of-json)
@@ -35,13 +35,13 @@ The main view keeps connected to the tweet stream to update in realtime the map 
 In the map there is a box representing the bounding box (as used for the API), that the users can interact with:
 
  * Drag and move around the map
-<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo3.gif" width="750"/>
+<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo3.gif" width="600"/>
 
  * Resize
-<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo2.gif" width="750"/>
+<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo2.gif" width="600"/>
 
 The tweets in the stream will be within the area delimited by that box. Aditionally, the tweets __that contains geo information__ will be shown in the map with a marker, and will show the tweet by putting the mouse over them:
-<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo1.gif" width="750"/>
+<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo1.gif" width="600"/>
  
 Everytime a tweet is received this will be shown in the bottom of the map.
 Also, when the box is moved the URI link will change providing a direct link to the API.
@@ -50,7 +50,15 @@ Also, when the box is moved the URI link will change providing a direct link to 
 
 The back-end supports concurrency of multiple users, and the interface is synchronized between them so the changes done by one users will be noticed by the others.
 
-<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo6.gif" width="750"/>
+<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo6.gif" width="600"/>
 
 
+# Installation
+
+For installing you should follow the following steps:
+1. cd to the directory where ```requirements.txt``` is located
+2. activate your virtualenv (recommended)
+3. run: ```pip install -r requirements.txt``` in your shell
+4. set your API keys correctly in the file ```config.cfg```. For this step you will need a [Twitter standard API key](https://developer.twitter.com/en/docs/basics/getting-started#get-started-app) and a [Google API key](https://developers.google.com/maps/documentation/embed/).
+5. run: ```python app.py```
 
