@@ -1,3 +1,4 @@
+import json
 import time
 
 from flask import Flask, render_template, logging, request, Response
@@ -102,19 +103,32 @@ def connect(bounds):
     :return: None
     """
 
-    # Get access to modify the app globals
+    # Get access to modify the app globals.
     global coordinates
     global thread
     global thread_running
 
+    # If the stream is running and the coordinates haven't change, do nothing
+    # otherwise the first stream and threat to handle it must be stopped and a
+    # new one must start within the new coordinates
+    if thread_running and compare_coordinates(bounds):
+        app.logger.debug('Same bounds...')
+        return
+    else:
+        app.logger.debug('Changing bounds: {}'.format(bounds))
+
     thread_running = False  # Stop the get_tweets task
     coordinates = bounds  # Set the new coordinates
+
+    # Emit the coordinates changes so all the peers will change their bounding boxes
+    socketio.emit('new_bounds', {'data': json.dumps(coordinates)},
+                  namespace='/webTweetStream', broadcast=True)
 
     # Wait till the get_tweets thread stops.
     if thread:
         thread.join(timeout=10)
 
-    # Start the new
+    # Start the new stream.
     thread_running = True
     thread = socketio.start_background_task(target=get_tweets)
 

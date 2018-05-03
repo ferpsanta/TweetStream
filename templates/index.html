@@ -48,7 +48,7 @@
 
     var socket = io.connect('{{base_url}}:{{ base_port }}/webTweetStream');
 
-    // Method for handling first connection
+    // Method to handle first connection
     socket.on('connect', function() {
         socket.emit('get_tweets', bounds);
         setURI();
@@ -59,6 +59,15 @@
         var msg_obj = JSON.parse(msg.data);
         printTweet(msg_obj);
         positionTweet(msg_obj);
+    });
+
+    // Method to handle the new_bounds event from the server
+    socket.on('new_bounds', function(msg) {
+        var msg_obj = JSON.parse(msg.data);
+        current_pos_rectangle.setOptions({'bounds': msg_obj});
+        document.getElementById('tweet-container').innerHTML = "Loading tweets...";
+        setURI();
+        clearTimeout(timer);
     });
 
     // Prints the received tweet in a new line with the user and the location.
