@@ -50,7 +50,7 @@ Also, when the box is moved the URI link will change providing a direct link to 
 
 The back-end supports concurrency of multiple users, and the interface is synchronized between them so the changes done by one users will be noticed by the others.
 
-<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo6.gif" width="600"/>
+<img src="https://github.com/ferpsanta/TweetStream/blob/master/demo/demo6.gif" width="750"/>
 
 
 # Installation
@@ -61,4 +61,5 @@ For installing you should follow the following steps:
 3. run: ```pip install -r requirements.txt``` in your shell
 4. set your API keys correctly in the file ```config.cfg```. For this step you will need a [Twitter standard API key](https://developer.twitter.com/en/docs/basics/getting-started#get-started-app) and a [Google API key](https://developers.google.com/maps/documentation/embed/).
 5. run: ```python app.py```
+6. Connect to [127.0.0.1:5000/](127.0.0.1:5000/)
 
