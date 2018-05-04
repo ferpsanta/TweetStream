@@ -159,13 +159,16 @@ def stream_tweets():
                            "west": west,
                            "south": south})
 
+    # This function is an infinite generator of JSONs that receives the data from the queue shared
+    # with the data stream. The end of this loop will be handled in a lower layer by gevent:
+    # https://stackoverflow.com/questions/31265050/how-to-make-an-exception-for-broken-pipe-errors-on-flask-when-the-client-discon
     def generate():
         while True:
             try:
                 data = consumer.data_stream.get()
                 yield data
             except Exception as e:
-                print(e)
+                app.logger.error(e)
 
     return Response(generate(), content_type='application/stream+json')
 
